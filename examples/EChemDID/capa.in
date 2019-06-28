@@ -1,0 +1,55 @@
+# Example of the 2-contacts example from J. Chem. Phys. 143, 054109 (2015)
+# Here with LiS electrodes
+units          real
+atom_style     full
+boundary       p p s
+
+lattice        custom 3.0 a1 1.0 0.0 0.0 a2 0.0 1.0 0.0 a3 0.0 0.0 1.0 & 
+               basis 0.0 0.0 0.0 basis 0.5 0.5 0.5
+region         boxl block 0 5 0 5 0 40 units lattice
+region         boxr block 0 5 0 5 45 85 units lattice
+region         box block 0 5 0 5 0 85 units lattice
+create_box     2 box
+create_atoms   1 region boxl basis 1 1 basis 2 2 
+create_atoms   2 region boxr basis 1 1 basis 2 2 
+
+pair_style     reax/c NULL checkqeq yes
+pair_coeff     * * ffield Li S 
+
+#kspace_style   pppm 1.0e-4
+
+group          Li type 1
+group          S type 2
+group          LiS type 1 2
+mass           1 6.9410 
+mass           2 32.0600
+
+timestep       0.5
+
+thermo_style   custom etotal pe ke temp evdwl press pxx pyy pzz pxy pxz pyz lx ly lz
+thermo_modify  line multi flush yes
+thermo         1
+
+variable       ti equal 1.0
+
+variable       z1min equal bound(LiS,zmin)
+variable       z1max equal ${z1min}+4.0
+variable       z2max equal bound(LiS,zmax)
+variable       z2min equal ${z2max}-4.0
+
+# Initialize the property
+fix            0 all property/atom d_locpot d_lap
+compute        0 all property/atom d_locpot d_lap
+
+# Boundary conditions regions
+region         bound1 block INF INF INF INF ${z1min} ${z1max} units box
+group          z_left region bound1
+region         bound2 block INF INF INF INF ${z2min} ${z2max} units box
+group          z_right region bound2
+
+dump           1 all custom 20 traj.dump id type x y z q c_0[1] c_0[2]
+
+#fix            1 all qeq/reax 1 0.0 10.0 1.0e-6 param.qeq
+fix            1 all qeq/shielded 1 10.0 1.0e-6 1000 param.qeq
+fix            2 all echemdid 1 k 6.0 rc 4.0 norm 0.629967 nelec 10 z_left z_right volt 8.0
+run            200
