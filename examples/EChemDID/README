@@ -1,3 +1,4 @@
 # Description
-This example described the application of an exteral voltage to a capacitor like structure.
+This example describes the application of an exteral voltage to a capacitor like structure using EChemDID.
+For more details refer to Ref. https://doi.org/10.1063/1.4927562
 The input file is self explenatory.
