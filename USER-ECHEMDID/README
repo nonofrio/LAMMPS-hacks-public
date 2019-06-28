@@ -6,5 +6,9 @@ fix_echemdid.*
 fix_qeq.* // Slight modification to enable echemdid with non reactive potentials using QEQ/Shielded 
 fix_qeq_shielded.* // Slight modification to enable echemdid with non reactive potentials using QEQ/Shielded
 
-# Istall
+# Install
+make yes-qeq
+make yes-user-echemdid // In this order
 
+# Usage
+See examples directory
