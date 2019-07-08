@@ -1,10 +1,10 @@
 # Version 
-This code was tested with lammps-12Dec18 version.
+This code was tested with lammps-22Aug18 version.
 
 # Files
 fix_echemdid.*
-fix_qeq.* // Slight modification to enable echemdid with non reactive potentials using QEQ/Shielded 
-fix_qeq_shielded.* // Slight modification to enable echemdid with non reactive potentials using QEQ/Shielded
+fix_qeq.* // Slight modification to enable echemdid 
+fix_qeq_shielded.* // Slight modification to enable echemdid 
 
 # Install
 make yes-qeq

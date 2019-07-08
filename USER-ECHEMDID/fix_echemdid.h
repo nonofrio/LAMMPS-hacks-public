@@ -35,6 +35,7 @@ class FixEChemDID : public Fix {
   ~FixEChemDID();
   int setmask();
   void init(), post_integrate();
+  void init_list(int, class NeighList *);
 
   virtual int pack_forward_comm(int, int *, double *, int, int *);
   virtual void unpack_forward_comm(int, int, double *);
@@ -45,6 +46,7 @@ class FixEChemDID : public Fix {
   double k,nelec,volt,rc,norm;
  private:
   void laplacian();
+  class NeighList *list;
 };
 
 }

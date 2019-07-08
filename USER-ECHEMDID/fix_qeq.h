@@ -49,7 +49,7 @@ class FixQEq : public Fix {
   int pack_exchange(int, double *);
   int unpack_exchange(int, double *);
   double memory_usage();
-  void get_names(char *,double *&); // EChemDID
+  int get_names(char *,double *&); // EChemDID
 
  protected:
   int nevery;
@@ -65,8 +65,8 @@ class FixQEq : public Fix {
   double swa, swb;      // lower/upper Taper cutoff radius
   double Tap[8];        // Taper function
   double tolerance;     // tolerance for the norm of the rel residual in CG
-  int maxiter;		// maximum number of QEq iterations
-  double cutoff, cutoff_sq;   	// neighbor cutoff
+  int maxiter;      // maximum number of QEq iterations
+  double cutoff, cutoff_sq;     // neighbor cutoff
 
   double *chi,*eta,*gamma,*zeta,*zcore;  // qeq parameters
   double *chizj;

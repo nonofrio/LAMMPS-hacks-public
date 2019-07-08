@@ -15,10 +15,10 @@
    Contributing author: Ray Shan (Sandia)
 ------------------------------------------------------------------------- */
 
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include "fix_qeq_shielded.h"
 #include "atom.h"
 #include "comm.h"
@@ -45,7 +45,6 @@ FixQEqShielded::FixQEqShielded(LAMMPS *lmp, int narg, char **arg) :
 
 void FixQEqShielded::init()
 {
-
   if (!atom->q_flag)
     error->all(FLERR,"Fix qeq/shielded requires atom attribute q");
 
@@ -106,7 +105,7 @@ void FixQEqShielded::init_shielding()
   Tap[3] = 140.0 * (swa3*swb + 3.0*swa2*swb2 + swa*swb3 ) / d7;
   Tap[2] =-210.0 * (swa3*swb2 + swa2*swb3) / d7;
   Tap[1] = 140.0 * swa3 * swb3 / d7;
-  Tap[0] = (-35.0*swa3*swb2*swb2 + 21.0*swa2*swb3*swb2 +
+  Tap[0] = (-35.0*swa3*swb2*swb2 + 21.0*swa2*swb3*swb2 -
             7.0*swa*swb3*swb3 + swb3*swb3*swb ) / d7;
 }
 
@@ -124,8 +123,8 @@ void FixQEqShielded::pre_force(int vflag)
     reallocate_matrix();
 
   init_matvec();
-  matvecs = CG(b_s, s);    	// CG on s - parallel
-  matvecs += CG(b_t, t); 	// CG on t - parallel
+  matvecs = CG(b_s, s);         // CG on s - parallel
+  matvecs += CG(b_t, t);        // CG on t - parallel
   calculate_Q();
 
   if (force->kspace) force->kspace->qsum_qsq();
@@ -139,8 +138,10 @@ void FixQEqShielded::init_matvec()
 
   int inum, ii, i;
   int *ilist;
+  int flag_echemdid; // EChemDID
   double *locpot; // EChemDID
-  get_names("locpot",locpot); // EChemDID
+  char tmp1[] = "locpot"; // EChemDID
+  flag_echemdid = get_names(tmp1,locpot); // EChemDID
 
   inum = list->inum;
   ilist = list->ilist;
@@ -149,7 +150,8 @@ void FixQEqShielded::init_matvec()
     i = ilist[ii];
     if (atom->mask[i] & groupbit) {
       Hdia_inv[i] = 1. / eta[ atom->type[i] ];
-      b_s[i]      = -( chi[atom->type[i]] + chizj[i] ) - locpot[i]; // EChemDID
+      if (flag_echemdid == 1) b_s[i] = -chi[atom->type[i]] - locpot[i]; // EChemDID
+      else b_s[i] = -chi[atom->type[i]]; // EChemDID
       b_t[i]      = -1.0;
       t[i] = t_hist[i][2] + 3 * ( t_hist[i][0] - t_hist[i][1] );
       s[i] = 4*(s_hist[i][0]+s_hist[i][2])-(6*s_hist[i][1]+s_hist[i][3]);
@@ -192,16 +194,16 @@ void FixQEqShielded::compute_H()
 
       for( jj = 0; jj < jnum; jj++ ) {
         j = jlist[jj];
-	j &= NEIGHMASK;
+        j &= NEIGHMASK;
 
         dx = x[j][0] - x[i][0];
         dy = x[j][1] - x[i][1];
         dz = x[j][2] - x[i][2];
         r_sqr = dx*dx + dy*dy + dz*dz;
 
-	if (r_sqr <= cutoff_sq) {
+        if (r_sqr <= cutoff_sq) {
           H.jlist[m_fill] = j;
-	  r = sqrt(r_sqr);
+          r = sqrt(r_sqr);
           H.val[m_fill] = 0.5 * calculate_H( r, shld[type[i]][type[j]] );
           m_fill++;
         }

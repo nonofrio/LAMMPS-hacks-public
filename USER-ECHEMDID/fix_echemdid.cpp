@@ -96,8 +96,8 @@ FixEChemDID::FixEChemDID(LAMMPS *lmp, int narg, char **arg) :
   int irequest = neighbor->request(this);
   neighbor->requests[irequest]->pair = 0;
   neighbor->requests[irequest]->fix  = 1;
-  neighbor->requests[irequest]->half = 1;
-  neighbor->requests[irequest]->full = 0;
+  neighbor->requests[irequest]->half = 0;
+  neighbor->requests[irequest]->full = 1;
 
 }
 
@@ -120,6 +120,13 @@ void FixEChemDID::init()
   if (flagqeq != 1){
     error->all(FLERR,"Fix EChemDID must be called with qeq/shielded");
   }
+}
+
+/* ---------------------------------------------------------------------- */
+
+void FixEChemDID::init_list(int id, NeighList *ptr)
+{
+  list = ptr;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -178,12 +185,11 @@ void FixEChemDID::laplacian()
   MPI_Comm_size(MPI_COMM_WORLD,&size);
   MPI_Comm_rank(MPI_COMM_WORLD,&rank);
 
-// Call neighbor list
-  Pair *epair = force->pair;
-  inum = epair->list->inum;
-  ilist = epair->list->ilist;
-  numneigh = epair->list->numneigh;
-  firstneigh = epair->list->firstneigh;
+// Get neighbors
+  inum = list->inum;
+  ilist = list->ilist;
+  numneigh = list->numneigh;
+  firstneigh = list->firstneigh;
 
 // Set boundary conditions for locpot
   double dt = update -> dt;
@@ -221,6 +227,7 @@ void FixEChemDID::laplacian()
       for (jj = 0; jj < jnum; jj++) {
         j = jlist[jj];
         j &= NEIGHMASK;
+//        printf("%d %d\n",i,j);
         if (mask[j] & groupbit) {
 
           delx = xtmp - x[j][0];
@@ -235,9 +242,8 @@ void FixEChemDID::laplacian()
           n += w;
           if (j < nlocal) n += w;
 
-// Compute laplacian for i and j because half list
+// Compute laplacian 
           lap[i] += w * (locpot[j] - locpot[i]) / rsq;
-          if (j < nlocal) lap[j] += w * (locpot[i] - locpot[j]) / rsq;
 
         } 
       }

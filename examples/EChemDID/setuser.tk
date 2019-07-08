@@ -1,0 +1,12 @@
+global env
+set env(LAMMPSREMAPFIELDS) {vx=c_0[1]}
+set mol [mol new traj.dump type lammpstrj waitfor all]
+set nf [molinfo $mol get numframes]
+set sel [atomselect $mol all]
+for {set i 0} {$i < $nf} {incr i} {
+  $sel frame $i
+  $sel set user [$sel get vx]
+}
+$sel delete
+unset sel
+unset env(LAMMPSREMAPFIELDS) 
