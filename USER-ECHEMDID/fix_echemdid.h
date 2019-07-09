@@ -13,7 +13,7 @@
 
 /* ----------------------------------------------------------------------
    Contributing author: Nicolas Onofrio, The Hong Kong PolyU 
-   (nicolas.onofrio@polyu.hk.edu)
+   (nicolas.onofrio@polyu.edu.hk)
 ------------------------------------------------------------------------- */
 
 #ifdef FIX_CLASS
