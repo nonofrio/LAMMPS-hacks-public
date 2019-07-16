@@ -40,10 +40,12 @@ class FixEChemDID : public Fix {
   virtual int pack_forward_comm(int, int *, double *, int, int *);
   virtual void unpack_forward_comm(int, int, double *);
   void get_names(char *,double *&);
+  double compute_vector(int);
 
  protected:
   int g1,g2,nlocal,nmax;
   double k,nelec,volt,rc,norm;
+  double js[2],js_all[2];
  private:
   void laplacian();
   class NeighList *list;

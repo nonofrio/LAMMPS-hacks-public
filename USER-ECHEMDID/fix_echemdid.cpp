@@ -99,6 +99,8 @@ FixEChemDID::FixEChemDID(LAMMPS *lmp, int narg, char **arg) :
   neighbor->requests[irequest]->half = 0;
   neighbor->requests[irequest]->full = 1;
 
+  vector_flag = 1;
+  size_vector = 2;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -192,12 +194,16 @@ void FixEChemDID::laplacian()
   firstneigh = list->firstneigh;
 
 // Set boundary conditions for locpot
+  js[0] = 0.0;
+  js[1] = 0.0;
   double dt = update -> dt;
   for (i = 0; i < nlocal; i++) {
     if (mask[i] & g1) {
+      js[0] += (0.5*volt-locpot[i])/dt;
       locpot[i] = 0.5*volt;
     }
     if (mask[i] & g2) {
+      js[1] += (-0.5*volt-locpot[i])/dt;
       locpot[i] = -0.5*volt;
     }
   }
@@ -302,3 +308,13 @@ void FixEChemDID::unpack_forward_comm(int n, int first, double *buf)
 }
 
 /* ---------------------------------------------------------------------- */
+
+double FixEChemDID::compute_vector(int n)
+{
+  // only sum across procs one time
+
+  MPI_Allreduce(js,js_all,2,MPI_DOUBLE,MPI_SUM,world);
+  return js_all[n];
+}
+
+/* ------------------------------------------------------------------------- */
