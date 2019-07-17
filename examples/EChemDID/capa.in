@@ -56,4 +56,5 @@ set            type 2 d_locpot 0.0
 #fix            1 all qeq/reax 1 0.0 10.0 1.0e-6 param.qeq
 fix            1 all qeq/shielded 1 10.0 1.0e-6 1000 param.qeq
 fix            2 all echemdid 1 k 6.0 rc 4.0 norm 0.629967 nelec 10 z_left z_right volt 8.0
+fix            3 all ave/time 1 2 4 f_2[1] f_2[2] file js.profile # this gives the current
 run            200
