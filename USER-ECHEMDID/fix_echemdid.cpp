@@ -101,6 +101,8 @@ FixEChemDID::FixEChemDID(LAMMPS *lmp, int narg, char **arg) :
 
   vector_flag = 1;
   size_vector = 2;
+  eflag = 0;
+  js[0] = js[1] = 0.0;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -194,8 +196,8 @@ void FixEChemDID::laplacian()
   firstneigh = list->firstneigh;
 
 // Set boundary conditions for locpot
-  js[0] = 0.0;
-  js[1] = 0.0;
+  eflag = 0;
+  js[0] = js[1] = 0.0;
   double dt = update -> dt;
   for (i = 0; i < nlocal; i++) {
     if (mask[i] & g1) {
@@ -313,7 +315,10 @@ double FixEChemDID::compute_vector(int n)
 {
   // only sum across procs one time
 
-  MPI_Allreduce(js,js_all,2,MPI_DOUBLE,MPI_SUM,world);
+  if (eflag == 0) {
+    MPI_Allreduce(js,js_all,2,MPI_DOUBLE,MPI_SUM,world);
+    eflag = 1;
+  }
   return js_all[n];
 }
 

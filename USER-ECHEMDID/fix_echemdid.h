@@ -46,6 +46,7 @@ class FixEChemDID : public Fix {
   int g1,g2,nlocal,nmax;
   double k,nelec,volt,rc,norm;
   double js[2],js_all[2];
+  int eflag;
  private:
   void laplacian();
   class NeighList *list;
