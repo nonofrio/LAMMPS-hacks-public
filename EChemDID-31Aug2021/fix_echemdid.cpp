@@ -76,14 +76,14 @@ FixEChemDID::FixEChemDID(LAMMPS *lmp, int narg, char **arg) :
 // fix ID groupID EChemDID nevery k k_value cut cut_value norm norm_value 
 // nelec nelec_value group1 group2 volt volt_value
 
-  nevery = force->inumeric(FLERR,arg[3]);
-  k = force->numeric(FLERR,arg[5]);
-  rc = force->numeric(FLERR,arg[7]);
-  norm = force->numeric(FLERR,arg[9]);
-  nelec = force->inumeric(FLERR,arg[11]);
+  nevery = utils::inumeric(FLERR,arg[3],false,lmp);
+  k = utils::numeric(FLERR,arg[5],false,lmp);
+  rc = utils::numeric(FLERR,arg[7],false,lmp);
+  norm = utils::numeric(FLERR,arg[9],false,lmp);
+  nelec = utils::inumeric(FLERR,arg[11],false,lmp);
   g1 = group->bitmask[group->find(arg[12])];
   g2 = group->bitmask[group->find(arg[13])];
-  volt = force->numeric(FLERR,arg[15]);
+  volt = utils::numeric(FLERR,arg[15],false,lmp);
 
   if ((nevery <= 0) || (rc <= 0.0) || (norm <= 0.0) || (nelec <= 0))
     error->all(FLERR,"Illegal fix EChemDID command");
@@ -209,6 +209,7 @@ void FixEChemDID::laplacian()
       locpot[i] = -0.5*volt;
     }
   }
+//  printf("%i %f %f\n",rank,js[0],js[1]);
 
 // Forward locpot to ghost
   comm->forward_comm_fix(this);
@@ -271,8 +272,8 @@ void FixEChemDID::laplacian()
 
 void FixEChemDID::get_names(char *c,double *&ptr)
 {
- int index,flag;
- index = atom->find_custom(c,flag);
+ int index,flag,cols;
+ index = atom->find_custom(c,flag,cols);
 
  if(index!=-1) ptr = atom->dvector[index];
  else error->all(FLERR,"Fix EChemDID requires fix property/atom d_locpot d_lap command");
@@ -316,7 +317,7 @@ double FixEChemDID::compute_vector(int n)
   // only sum across procs one time
 
   if (eflag == 0) {
-    MPI_Allreduce(js,js_all,2,MPI_DOUBLE,MPI_SUM,world);
+    MPI_Allreduce(js,js_all,3,MPI_DOUBLE,MPI_SUM,world);
     eflag = 1;
   }
   return js_all[n];
