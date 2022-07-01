@@ -9,4 +9,4 @@ for {set i 0} {$i < $nf} {incr i} {
 }
 $sel delete
 unset sel
-unset env(LAMMPSREMAPFIELDS) 
+unset env(LAMMPSREMAPFIELDS)
