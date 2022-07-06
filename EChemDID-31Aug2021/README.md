@@ -7,3 +7,7 @@ This local electrostatic potential is used to dynamically modify the atomic elec
 Please cite the following papers if you are using this package in a publication:
 - Voltage equilibration for reactive atomistic simulations of electrochemical processes. Nicolas Onofrio and Alejandro Strachan, The Journal of Chemical Physics, 143, 054109, 2015 https://doi.org/10.1063/1.4927562
 - Atomic origin of ultrafast resistance-switching in nanoscale electrometallization cells. Nicolas Onofrio, David Guzman and Alejandro Strachan, Nature Materials, vol 14, 4, 2015 https://doi.org/10.1038/NMAT4221
+
+To install just copy this directory into LAMMPS/src/ECHEMDID and from src type:
+`make yes-qeq`  
+`make yes-echemdid` // In this order
