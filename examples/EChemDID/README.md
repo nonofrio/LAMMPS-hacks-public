@@ -8,4 +8,5 @@ One can use the tcl script to map the local potential to the user field of vmd f
 You can plot/compute the error between the electrochemical diffusion versus the analytical relation with plot.py/get_error.py
 
 lmp -in capa.in
+
 python get_error.py
