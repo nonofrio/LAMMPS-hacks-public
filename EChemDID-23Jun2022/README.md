@@ -16,6 +16,6 @@ To install just copy this directory into LAMMPS/src/ECHEMDID and from src type:
 Note with cmake: 
 - create src/ECHEMDID directory and copy fix_echemdid.* in there
 - backup src/QEQ/fix_qeq.* and src/QEQ/fix_qeq_shielded.* (i.e. cp src/QEQ/fix_qeq.* src/QEQ/fix_qeq.*_bak, etc.)
-- overwrite src/QEQ/fix_qeq.* and src/QEQ/fix_qeq_shielded.* with the one provide in this directory
+- overwrite src/QEQ/fix_qeq.* and src/QEQ/fix_qeq_shielded.* with those provided in this directory
 
 cmake ../cmake -D PKG_QEQ=on -D PKG_ECHEMDID=on && make -j4
